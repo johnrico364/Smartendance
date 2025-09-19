@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface AddTeacherModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface TeacherFormData {
   phoneNumber: string;
   gender: string;
   birthDate: string;
+  photo?: string; // Base64 encoded image
   address?: string;
   city?: string;
   province?: string;
@@ -35,6 +37,7 @@ export default function AddTeacherModal({ isOpen, onClose, onAdd }: AddTeacherMo
     phoneNumber: '',
     gender: '',
     birthDate: '',
+    photo: '',
     address: '',
     city: '',
     province: '',
@@ -66,7 +69,7 @@ export default function AddTeacherModal({ isOpen, onClose, onAdd }: AddTeacherMo
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="fixed inset-0 bg-black opacity-50"></div>
-      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto relative z-10">
+      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-8 max-w-7xl w-full mx-4 max-h-[95vh] overflow-y-auto relative z-10">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Add New Teacher</h2>
           <button 
@@ -77,9 +80,67 @@ export default function AddTeacherModal({ isOpen, onClose, onAdd }: AddTeacherMo
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Profile Image Upload */}
+          <div className="mb-6 p-6 bg-gray-50 rounded-lg">
+            <div className="flex items-start space-x-6">
+              <div className="flex-shrink-0">
+                <div className="relative w-40 h-40">
+                  {formData.photo ? (
+                    <Image
+                      src={formData.photo}
+                      alt="Teacher photo"
+                      fill
+                      className="object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-40 h-40 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  id="photo-upload"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setFormData(prev => ({
+                          ...prev,
+                          photo: reader.result as string
+                        }));
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                <label
+                  htmlFor="photo-upload"
+                  className="mt-2 inline-block px-4 py-2 bg-white border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors text-sm text-gray-600"
+                >
+                  Upload Photo
+                </label>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Teacher Photo</h4>
+                <p className="text-sm text-gray-500 mb-4">Upload a professional photo. The photo should be:</p>
+                <ul className="text-sm text-gray-500 list-disc list-inside space-y-1">
+                  <li>A recent photo (taken within the last 6 months)</li>
+                  <li>Professional appearance</li>
+                  <li>Clear and well-lit</li>
+                  <li>Plain background</li>
+                </ul>
+              </div>
+            </div>
+          </div>
           {/* Account Information */}
-          <div>
+          <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -114,7 +175,7 @@ export default function AddTeacherModal({ isOpen, onClose, onAdd }: AddTeacherMo
           </div>
 
           {/* Basic Information */}
-          <div>
+          <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -181,7 +242,7 @@ export default function AddTeacherModal({ isOpen, onClose, onAdd }: AddTeacherMo
           </div>
 
           {/* Contact Information */}
-          <div>
+          <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -216,7 +277,7 @@ export default function AddTeacherModal({ isOpen, onClose, onAdd }: AddTeacherMo
           </div>
 
           {/* Address Information */}
-          <div>
+          <div className="bg-gray-50 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Address Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="col-span-2">
