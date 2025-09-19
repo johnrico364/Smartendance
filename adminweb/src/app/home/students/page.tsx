@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import AddStudentModal from './components/AddStudentModal';
 import ViewStudentModal from './components/ViewStudentModal';
+import StatusCounter from './components/StatusCounter';
 
 export default function StudentsPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,6 +15,7 @@ export default function StudentsPage() {
     { 
       studentId: 'STU-001', 
       fullName: 'Alice Johnson', 
+      profilePicture: null,
       gradeLevel: 'Grade 10', 
       section: 'A', 
       gender: 'Female',
@@ -34,6 +36,7 @@ export default function StudentsPage() {
     { 
       studentId: 'STU-002', 
       fullName: 'Brian Chen', 
+      profilePicture: null,
       gradeLevel: 'Grade 10', 
       section: 'A', 
       gender: 'Male',
@@ -60,17 +63,31 @@ export default function StudentsPage() {
     student.section.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Removed status color function as it's no longer needed
+  const totalMale = students.filter(student => student.gender === 'Male').length;
+  const totalFemale = students.filter(student => student.gender === 'Female').length;
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Students</h1>
+    <div className="min-h-screen bg-gray-50/50 p-8">
+      <StatusCounter 
+        totalStudents={students.length}
+        totalMale={totalMale}
+        totalFemale={totalFemale}
+      />
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center space-x-4">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Students</h1>
+          <span className="px-4 py-1.5 text-sm font-semibold bg-blue-50 text-blue-600 rounded-full ring-1 ring-blue-100">
+            {students.length} total
+          </span>
+        </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-sm font-semibold text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
         >
-          + Add
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+          </svg>
+          Add Student
         </button>
         
         <AddStudentModal 
@@ -83,46 +100,108 @@ export default function StudentsPage() {
         />
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4">
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Search students..."
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+      <div className="bg-white rounded-xl shadow-md border border-gray-200/80 backdrop-blur-sm">
+        <div className="p-6">
+          <div className="mb-6">
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Search students..."
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-300"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead className="bg-gray-50">
+          <div className="overflow-x-auto rounded-xl border border-gray-200/80">
+            <table className="min-w-full divide-y divide-gray-200/80">
+              <thead className="bg-gray-50/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade Level</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Profile</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Student ID</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Full Name</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Grade Level</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Section</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Gender</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200/80">
                 {filteredStudents.map((student) => (
-                  <tr key={student.studentId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.studentId}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.fullName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.gradeLevel}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.section}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.gender}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <tr key={student.studentId} className="hover:bg-gray-50/50 transition-colors duration-200">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center justify-center">
+                        {student.profilePicture ? (
+                          <div className="relative group">
+                            <img
+                              src={student.profilePicture}
+                              alt={`${student.fullName}'s profile`}
+                              className="h-10 w-10 rounded-full object-cover border border-gray-200/50 group-hover:border-blue-500/50 shadow-sm group-hover:shadow-md transition-all duration-200 transform group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-opacity duration-200" />
+                          </div>
+                        ) : (
+                          <div className="relative group">
+                            <div className={`h-10 w-10 rounded-full flex items-center justify-center border-2 shadow-sm
+                              ${student.gender === 'Male' 
+                                ? 'border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 group-hover:from-blue-100 group-hover:to-blue-200' 
+                                : 'border-pink-200 bg-gradient-to-br from-pink-50 to-pink-100 group-hover:from-pink-100 group-hover:to-pink-200'
+                              } 
+                              transform transition-all duration-200 ease-in-out group-hover:scale-105 group-hover:shadow-md`}
+                            >
+                              <span className={`text-sm font-bold 
+                                ${student.gender === 'Male' 
+                                  ? 'text-blue-600 group-hover:text-blue-700' 
+                                  : 'text-pink-600 group-hover:text-pink-700'
+                                }`}
+                              >
+                                {student.fullName.split(' ').map(n => n[0]).join('')}
+                              </span>
+                            </div>
+                            <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-5 transition-opacity duration-200" />
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm font-medium text-gray-800">{student.studentId}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm font-medium text-gray-800">{student.fullName}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm text-gray-700">{student.gradeLevel}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm text-gray-700">{student.section}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ring-1 ${
+                        student.gender === 'Male' 
+                          ? 'bg-blue-50 text-blue-700 ring-blue-200/50' 
+                          : 'bg-pink-50 text-pink-700 ring-pink-200/50'
+                      } transition-colors duration-200`}>
+                        {student.gender}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <button 
-                        className="bg-gray-900 text-white px-3 py-1 rounded-md hover:bg-gray-700 transition-colors"
+                        className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-600 text-sm font-medium rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
                         onClick={() => {
                           setSelectedStudent(student);
                           setIsViewModalOpen(true);
                         }}
                       >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                        </svg>
                         View
                       </button>
                     </td>
